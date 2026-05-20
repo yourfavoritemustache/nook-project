@@ -33,8 +33,8 @@ export const CollectionTree: React.FC<CollectionTreeProps> = ({
     <ul style={{ listStyle: 'none', paddingLeft: level === 0 ? '0' : '16px', marginTop: '4px' }}>
       {collections.map((node) => {
         const hasChildren = node.children && node.children.length > 0;
-        const isExpanded = expanded[node.id];
-        const isActive = currentTab === node.id;
+        const isExpanded = expanded[node.id.toString()];
+        const isActive = currentTab === node.id.toString();
 
         return (
           <li key={node.id} style={{ marginBottom: '2px' }}>
@@ -51,12 +51,12 @@ export const CollectionTree: React.FC<CollectionTreeProps> = ({
                 transition: 'all var(--transition-fast)',
                 userSelect: 'none',
               }}
-              onClick={() => onSelect(node.id)}
+              onClick={() => onSelect(node.id.toString())}
             >
               {/* Expand Toggle */}
               <div 
                 style={{ width: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                onClick={(e) => hasChildren && toggleExpand(e, node.id)}
+                onClick={(e) => hasChildren && toggleExpand(e, node.id.toString())}
               >
                 {hasChildren && (
                   isExpanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />
@@ -70,7 +70,7 @@ export const CollectionTree: React.FC<CollectionTreeProps> = ({
 
               {/* Title */}
               <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontSize: '14px' }}>
-                {node.name}
+                {node.title}
               </span>
 
               {/* Actions (Edit) */}

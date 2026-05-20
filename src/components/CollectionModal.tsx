@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { X, Folder, AlertCircle } from 'lucide-react';
+import { X, AlertCircle } from 'lucide-react';
 import { supabase } from '../lib/supabase';
-import { useCollections, type Collection } from '../store/useCollections';
+import { useCollections } from '../store/useCollections';
+import type { Collection } from '../store/useCollections';
 
 interface CollectionModalProps {
   isOpen: boolean;
   onClose: () => void;
   editCollection?: Collection | null;
-  parentId?: string | null;
+  parentId?: number | null;
 }
 
 const COLORS = [
@@ -24,20 +25,20 @@ export const CollectionModal: React.FC<CollectionModalProps> = ({
 }) => {
   const { collections, fetchCollections } = useCollections();
   
-  const [name, setName] = useState('');
+  const [title, setTitle] = useState('');
   const [color, setColor] = useState(COLORS[0]);
-  const [selectedParentId, setSelectedParentId] = useState<string | null>(parentId);
+  const [selectedParentId, setSelectedParentId] = useState<number | null>(parentId);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (isOpen) {
       if (editCollection) {
-        setName(editCollection.name);
+        setTitle(editCollection.title);
         setColor(editCollection.color || COLORS[0]);
         setSelectedParentId(editCollection.parent_id);
       } else {
-        setName('');
+        setTitle('');
         setColor(COLORS[0]);
         setSelectedParentId(parentId);
       }
@@ -49,7 +50,7 @@ export const CollectionModal: React.FC<CollectionModalProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name.trim()) {
+    if (!title.trim()) {
       setError('Collection name is required');
       return;
     }
@@ -65,7 +66,7 @@ export const CollectionModal: React.FC<CollectionModalProps> = ({
         const { error } = await supabase
           .from('collections')
           .update({
-            name: name.trim(),
+            title: title.trim(),
             color,
             parent_id: selectedParentId,
             updated_at: new Date().toISOString()
@@ -77,7 +78,7 @@ export const CollectionModal: React.FC<CollectionModalProps> = ({
           .from('collections')
           .insert({
             user_id: userId,
-            name: name.trim(),
+            title: title.trim(),
             color,
             parent_id: selectedParentId,
             sort_order: 0
@@ -151,8 +152,8 @@ export const CollectionModal: React.FC<CollectionModalProps> = ({
             <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px', fontWeight: 500 }}>Name</label>
             <input 
               type="text" 
-              value={name}
-              onChange={(e) => setName(e.target.value)}
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
               placeholder="e.g. Design Inspiration"
               autoFocus
               style={{
@@ -169,8 +170,8 @@ export const CollectionModal: React.FC<CollectionModalProps> = ({
           <div style={{ marginBottom: '20px' }}>
             <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px', fontWeight: 500 }}>Parent Collection (Optional)</label>
             <select 
-              value={selectedParentId || ''}
-              onChange={(e) => setSelectedParentId(e.target.value || null)}
+              value={selectedParentId ?? ''}
+              onChange={(e) => setSelectedParentId(e.target.value ? parseInt(e.target.value, 10) : null)}
               style={{
                 width: '100%',
                 padding: '10px 14px',
@@ -182,7 +183,7 @@ export const CollectionModal: React.FC<CollectionModalProps> = ({
             >
               <option value="">None (Top Level)</option>
               {availableParents.map(c => (
-                <option key={c.id} value={c.id}>{c.name}</option>
+                <option key={c.id} value={c.id}>{c.title}</option>
               ))}
             </select>
           </div>

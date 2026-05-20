@@ -4,7 +4,7 @@ import { Sidebar } from './components/Sidebar';
 import { BottomNav } from './components/BottomNav';
 
 import { CollectionModal } from './components/CollectionModal';
-import { Collection } from './store/useCollections';
+import type { Collection } from './store/useCollections';
 
 type ViewMode = 'grid' | 'list' | 'masonry' | 'headlines';
 

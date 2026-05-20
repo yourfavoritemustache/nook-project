@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import { 
   Inbox, 
-  Folder, 
   Tag, 
   Highlighter, 
   Settings, 

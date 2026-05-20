@@ -28,7 +28,7 @@ export const useCollections = create<CollectionsState>((set, get) => ({
         .select('*')
         .eq('user_id', userId)
         .order('sort_order', { ascending: true })
-        .order('name', { ascending: true });
+        .order('title', { ascending: true });
 
       if (error) throw error;
       set({ collections: data as Collection[] });
@@ -70,7 +70,7 @@ export const useCollections = create<CollectionsState>((set, get) => ({
 }));
 
 // Helper to build a nested tree
-export function buildCollectionTree(collections: Collection[], parentId: string | null = null): (Collection & { children: any[] })[] {
+export function buildCollectionTree(collections: Collection[], parentId: number | null = null): (Collection & { children: any[] })[] {
   return collections
     .filter((c) => c.parent_id === parentId)
     .map((c) => ({
