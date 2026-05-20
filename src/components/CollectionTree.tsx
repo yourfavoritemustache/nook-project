@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Folder, ChevronRight, ChevronDown, MoreHorizontal } from 'lucide-react';
-import { Collection } from '../store/useCollections';
+import type { Collection } from '../store/useCollections';
 
 interface CollectionTreeProps {
   collections: (Collection & { children: any[] })[];

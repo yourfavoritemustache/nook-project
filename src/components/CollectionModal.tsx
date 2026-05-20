@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, Folder, AlertCircle } from 'lucide-react';
 import { supabase } from '../lib/supabase';
-import { useCollections, Collection } from '../store/useCollections';
+import { useCollections, type Collection } from '../store/useCollections';
 
 interface CollectionModalProps {
   isOpen: boolean;

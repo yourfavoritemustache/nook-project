@@ -14,7 +14,7 @@ import {
 import { useCollections, buildCollectionTree } from '../store/useCollections';
 import { CollectionTree } from './CollectionTree';
 
-import { Collection } from '../store/useCollections';
+import type { Collection } from '../store/useCollections';
 
 interface SidebarProps {
   currentTab: string;
