@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { supabase } from '../lib/supabase';
-import { Database } from '../types/database';
+import type { Database } from '../types/database';
 
 export type Collection = Database['public']['Tables']['collections']['Row'];
 
