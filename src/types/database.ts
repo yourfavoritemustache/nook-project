@@ -1,1 +1,387 @@
-{"types":"export type Json =\n  | string\n  | number\n  | boolean\n  | null\n  | { [key: string]: Json | undefined }\n  | Json[]\n\nexport type Database = {\n  // Allows to automatically instantiate createClient with right options\n  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)\n  __InternalSupabase: {\n    PostgrestVersion: \"14.5\"\n  }\n  public: {\n    Tables: {\n      bookmarks: {\n        Row: {\n          collection_id: number | null\n          cover_url: string | null\n          created_at: string\n          domain: string\n          dropbox_path: string | null\n          excerpt: string | null\n          id: string\n          is_broken: boolean\n          reminder_at: string | null\n          tags: string[]\n          title: string\n          type: string\n          updated_at: string\n          url: string\n          user_id: string\n        }\n        Insert: {\n          collection_id?: number | null\n          cover_url?: string | null\n          created_at?: string\n          domain: string\n          dropbox_path?: string | null\n          excerpt?: string | null\n          id?: string\n          is_broken?: boolean\n          reminder_at?: string | null\n          tags?: string[]\n          title: string\n          type?: string\n          updated_at?: string\n          url: string\n          user_id: string\n        }\n        Update: {\n          collection_id?: number | null\n          cover_url?: string | null\n          created_at?: string\n          domain?: string\n          dropbox_path?: string | null\n          excerpt?: string | null\n          id?: string\n          is_broken?: boolean\n          reminder_at?: string | null\n          tags?: string[]\n          title?: string\n          type?: string\n          updated_at?: string\n          url?: string\n          user_id?: string\n        }\n        Relationships: [\n          {\n            foreignKeyName: \"bookmarks_collection_id_fkey\"\n            columns: [\"collection_id\"]\n            isOneToOne: false\n            referencedRelation: \"collections\"\n            referencedColumns: [\"id\"]\n          },\n          {\n            foreignKeyName: \"bookmarks_user_id_fkey\"\n            columns: [\"user_id\"]\n            isOneToOne: false\n            referencedRelation: \"profiles\"\n            referencedColumns: [\"id\"]\n          },\n        ]\n      }\n      collections: {\n        Row: {\n          color: string | null\n          created_at: string\n          icon: string | null\n          id: number\n          is_public: boolean\n          parent_id: number | null\n          sort_order: number\n          title: string\n          updated_at: string\n          user_id: string\n          view_mode: string\n        }\n        Insert: {\n          color?: string | null\n          created_at?: string\n          icon?: string | null\n          id?: number\n          is_public?: boolean\n          parent_id?: number | null\n          sort_order?: number\n          title: string\n          updated_at?: string\n          user_id: string\n          view_mode?: string\n        }\n        Update: {\n          color?: string | null\n          created_at?: string\n          icon?: string | null\n          id?: number\n          is_public?: boolean\n          parent_id?: number | null\n          sort_order?: number\n          title?: string\n          updated_at?: string\n          user_id?: string\n          view_mode?: string\n        }\n        Relationships: [\n          {\n            foreignKeyName: \"collections_parent_id_fkey\"\n            columns: [\"parent_id\"]\n            isOneToOne: false\n            referencedRelation: \"collections\"\n            referencedColumns: [\"id\"]\n          },\n          {\n            foreignKeyName: \"collections_user_id_fkey\"\n            columns: [\"user_id\"]\n            isOneToOne: false\n            referencedRelation: \"profiles\"\n            referencedColumns: [\"id\"]\n          },\n        ]\n      }\n      highlights: {\n        Row: {\n          bookmark_id: string\n          color: string\n          created_at: string\n          id: string\n          note: string | null\n          text: string\n          user_id: string\n        }\n        Insert: {\n          bookmark_id: string\n          color?: string\n          created_at?: string\n          id?: string\n          note?: string | null\n          text: string\n          user_id: string\n        }\n        Update: {\n          bookmark_id?: string\n          color?: string\n          created_at?: string\n          id?: string\n          note?: string | null\n          text?: string\n          user_id?: string\n        }\n        Relationships: [\n          {\n            foreignKeyName: \"highlights_bookmark_id_fkey\"\n            columns: [\"bookmark_id\"]\n            isOneToOne: false\n            referencedRelation: \"bookmarks\"\n            referencedColumns: [\"id\"]\n          },\n          {\n            foreignKeyName: \"highlights_user_id_fkey\"\n            columns: [\"user_id\"]\n            isOneToOne: false\n            referencedRelation: \"profiles\"\n            referencedColumns: [\"id\"]\n          },\n        ]\n      }\n      profiles: {\n        Row: {\n          avatar_url: string | null\n          created_at: string\n          dropbox_refresh_token: string | null\n          email: string | null\n          full_name: string | null\n          id: string\n          subscription_status: string\n          theme: string\n          updated_at: string\n        }\n        Insert: {\n          avatar_url?: string | null\n          created_at?: string\n          dropbox_refresh_token?: string | null\n          email?: string | null\n          full_name?: string | null\n          id: string\n          subscription_status?: string\n          theme?: string\n          updated_at?: string\n        }\n        Update: {\n          avatar_url?: string | null\n          created_at?: string\n          dropbox_refresh_token?: string | null\n          email?: string | null\n          full_name?: string | null\n          id?: string\n          subscription_status?: string\n          theme?: string\n          updated_at?: string\n        }\n        Relationships: []\n      }\n      tags: {\n        Row: {\n          bookmark_count: number\n          name: string\n          user_id: string\n        }\n        Insert: {\n          bookmark_count?: number\n          name: string\n          user_id: string\n        }\n        Update: {\n          bookmark_count?: number\n          name?: string\n          user_id?: string\n        }\n        Relationships: [\n          {\n            foreignKeyName: \"tags_user_id_fkey\"\n            columns: [\"user_id\"]\n            isOneToOne: false\n            referencedRelation: \"profiles\"\n            referencedColumns: [\"id\"]\n          },\n        ]\n      }\n    }\n    Views: {\n      [_ in never]: never\n    }\n    Functions: {\n      [_ in never]: never\n    }\n    Enums: {\n      [_ in never]: never\n    }\n    CompositeTypes: {\n      [_ in never]: never\n    }\n  }\n}\n\ntype DatabaseWithoutInternals = Omit<Database, \"__InternalSupabase\">\n\ntype DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, \"public\">]\n\nexport type Tables<\n  DefaultSchemaTableNameOrOptions extends\n    | keyof (DefaultSchema[\"Tables\"] & DefaultSchema[\"Views\"])\n    | { schema: keyof DatabaseWithoutInternals },\n  TableName extends DefaultSchemaTableNameOrOptions extends {\n    schema: keyof DatabaseWithoutInternals\n  }\n    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions[\"schema\"]][\"Tables\"] &\n        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions[\"schema\"]][\"Views\"])\n    : never = never,\n> = DefaultSchemaTableNameOrOptions extends {\n  schema: keyof DatabaseWithoutInternals\n}\n  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions[\"schema\"]][\"Tables\"] &\n      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions[\"schema\"]][\"Views\"])[TableName] extends {\n      Row: infer R\n    }\n    ? R\n    : never\n  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema[\"Tables\"] &\n        DefaultSchema[\"Views\"])\n    ? (DefaultSchema[\"Tables\"] &\n        DefaultSchema[\"Views\"])[DefaultSchemaTableNameOrOptions] extends {\n        Row: infer R\n      }\n      ? R\n      : never\n    : never\n\nexport type TablesInsert<\n  DefaultSchemaTableNameOrOptions extends\n    | keyof DefaultSchema[\"Tables\"]\n    | { schema: keyof DatabaseWithoutInternals },\n  TableName extends DefaultSchemaTableNameOrOptions extends {\n    schema: keyof DatabaseWithoutInternals\n  }\n    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions[\"schema\"]][\"Tables\"]\n    : never = never,\n> = DefaultSchemaTableNameOrOptions extends {\n  schema: keyof DatabaseWithoutInternals\n}\n  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions[\"schema\"]][\"Tables\"][TableName] extends {\n      Insert: infer I\n    }\n    ? I\n    : never\n  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema[\"Tables\"]\n    ? DefaultSchema[\"Tables\"][DefaultSchemaTableNameOrOptions] extends {\n        Insert: infer I\n      }\n      ? I\n      : never\n    : never\n\nexport type TablesUpdate<\n  DefaultSchemaTableNameOrOptions extends\n    | keyof DefaultSchema[\"Tables\"]\n    | { schema: keyof DatabaseWithoutInternals },\n  TableName extends DefaultSchemaTableNameOrOptions extends {\n    schema: keyof DatabaseWithoutInternals\n  }\n    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions[\"schema\"]][\"Tables\"]\n    : never = never,\n> = DefaultSchemaTableNameOrOptions extends {\n  schema: keyof DatabaseWithoutInternals\n}\n  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions[\"schema\"]][\"Tables\"][TableName] extends {\n      Update: infer U\n    }\n    ? U\n    : never\n  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema[\"Tables\"]\n    ? DefaultSchema[\"Tables\"][DefaultSchemaTableNameOrOptions] extends {\n        Update: infer U\n      }\n      ? U\n      : never\n    : never\n\nexport type Enums<\n  DefaultSchemaEnumNameOrOptions extends\n    | keyof DefaultSchema[\"Enums\"]\n    | { schema: keyof DatabaseWithoutInternals },\n  EnumName extends DefaultSchemaEnumNameOrOptions extends {\n    schema: keyof DatabaseWithoutInternals\n  }\n    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions[\"schema\"]][\"Enums\"]\n    : never = never,\n> = DefaultSchemaEnumNameOrOptions extends {\n  schema: keyof DatabaseWithoutInternals\n}\n  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions[\"schema\"]][\"Enums\"][EnumName]\n  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema[\"Enums\"]\n    ? DefaultSchema[\"Enums\"][DefaultSchemaEnumNameOrOptions]\n    : never\n\nexport type CompositeTypes<\n  PublicCompositeTypeNameOrOptions extends\n    | keyof DefaultSchema[\"CompositeTypes\"]\n    | { schema: keyof DatabaseWithoutInternals },\n  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {\n    schema: keyof DatabaseWithoutInternals\n  }\n    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions[\"schema\"]][\"CompositeTypes\"]\n    : never = never,\n> = PublicCompositeTypeNameOrOptions extends {\n  schema: keyof DatabaseWithoutInternals\n}\n  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions[\"schema\"]][\"CompositeTypes\"][CompositeTypeName]\n  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema[\"CompositeTypes\"]\n    ? DefaultSchema[\"CompositeTypes\"][PublicCompositeTypeNameOrOptions]\n    : never\n\nexport const Constants = {\n  public: {\n    Enums: {},\n  },\n} as const\n"}
+export type Json =
+  | string
+  | number
+  | boolean
+  | null
+  | { [key: string]: Json | undefined }
+  | Json[]
+
+export type Database = {
+  // Allows to automatically instantiate createClient with right options
+  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
+  __InternalSupabase: {
+    PostgrestVersion: "14.5"
+  }
+  public: {
+    Tables: {
+      bookmarks: {
+        Row: {
+          collection_id: number | null
+          cover_url: string | null
+          created_at: string
+          domain: string
+          dropbox_path: string | null
+          excerpt: string | null
+          id: string
+          is_broken: boolean
+          reminder_at: string | null
+          tags: string[]
+          title: string
+          type: string
+          updated_at: string
+          url: string
+          user_id: string
+        }
+        Insert: {
+          collection_id?: number | null
+          cover_url?: string | null
+          created_at?: string
+          domain: string
+          dropbox_path?: string | null
+          excerpt?: string | null
+          id?: string
+          is_broken?: boolean
+          reminder_at?: string | null
+          tags?: string[]
+          title: string
+          type?: string
+          updated_at?: string
+          url: string
+          user_id: string
+        }
+        Update: {
+          collection_id?: number | null
+          cover_url?: string | null
+          created_at?: string
+          domain?: string
+          dropbox_path?: string | null
+          excerpt?: string | null
+          id?: string
+          is_broken?: boolean
+          reminder_at?: string | null
+          tags?: string[]
+          title?: string
+          type?: string
+          updated_at?: string
+          url?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bookmarks_collection_id_fkey"
+            columns: ["collection_id"]
+            isOneToOne: false
+            referencedRelation: "collections"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bookmarks_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      collections: {
+        Row: {
+          color: string | null
+          created_at: string
+          icon: string | null
+          id: number
+          is_public: boolean
+          parent_id: number | null
+          sort_order: number
+          title: string
+          updated_at: string
+          user_id: string
+          view_mode: string
+        }
+        Insert: {
+          color?: string | null
+          created_at?: string
+          icon?: string | null
+          id?: number
+          is_public?: boolean
+          parent_id?: number | null
+          sort_order?: number
+          title: string
+          updated_at?: string
+          user_id: string
+          view_mode?: string
+        }
+        Update: {
+          color?: string | null
+          created_at?: string
+          icon?: string | null
+          id?: number
+          is_public?: boolean
+          parent_id?: number | null
+          sort_order?: number
+          title?: string
+          updated_at?: string
+          user_id?: string
+          view_mode?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "collections_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "collections"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "collections_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      highlights: {
+        Row: {
+          bookmark_id: string
+          color: string
+          created_at: string
+          id: string
+          note: string | null
+          text: string
+          user_id: string
+        }
+        Insert: {
+          bookmark_id: string
+          color?: string
+          created_at?: string
+          id?: string
+          note?: string | null
+          text: string
+          user_id: string
+        }
+        Update: {
+          bookmark_id?: string
+          color?: string
+          created_at?: string
+          id?: string
+          note?: string | null
+          text?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "highlights_bookmark_id_fkey"
+            columns: ["bookmark_id"]
+            isOneToOne: false
+            referencedRelation: "bookmarks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "highlights_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          dropbox_refresh_token: string | null
+          email: string | null
+          full_name: string | null
+          id: string
+          subscription_status: string
+          theme: string
+          updated_at: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          dropbox_refresh_token?: string | null
+          email?: string | null
+          full_name?: string | null
+          id: string
+          subscription_status?: string
+          theme?: string
+          updated_at?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          dropbox_refresh_token?: string | null
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          subscription_status?: string
+          theme?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      tags: {
+        Row: {
+          bookmark_count: number
+          name: string
+          user_id: string
+        }
+        Insert: {
+          bookmark_count?: number
+          name: string
+          user_id: string
+        }
+        Update: {
+          bookmark_count?: number
+          name?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tags_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      [_ in never]: never
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
+  }
+}
+
+type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
+
+type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
+
+export type Tables<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
+    : never = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+      Row: infer R
+    }
+    ? R
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])
+    ? (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
+        Row: infer R
+      }
+      ? R
+      : never
+    : never
+
+export type TablesInsert<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    : never = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Insert: infer I
+    }
+    ? I
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+        Insert: infer I
+      }
+      ? I
+      : never
+    : never
+
+export type TablesUpdate<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    : never = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Update: infer U
+    }
+    ? U
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+        Update: infer U
+      }
+      ? U
+      : never
+    : never
+
+export type Enums<
+  DefaultSchemaEnumNameOrOptions extends
+    | keyof DefaultSchema["Enums"]
+    | { schema: keyof DatabaseWithoutInternals },
+  EnumName extends DefaultSchemaEnumNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
+    : never = never,
+> = DefaultSchemaEnumNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
+  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
+    ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
+    : never
+
+export type CompositeTypes<
+  PublicCompositeTypeNameOrOptions extends
+    | keyof DefaultSchema["CompositeTypes"]
+    | { schema: keyof DatabaseWithoutInternals },
+  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
+    : never = never,
+> = PublicCompositeTypeNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
+  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
+    ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
+    : never
+
+export const Constants = {
+  public: {
+    Enums: {},
+  },
+} as const
