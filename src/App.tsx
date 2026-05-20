@@ -3,6 +3,9 @@ import { Menu, Grid, List, Plus, Sun, Moon } from 'lucide-react';
 import { Sidebar } from './components/Sidebar';
 import { BottomNav } from './components/BottomNav';
 
+import { CollectionModal } from './components/CollectionModal';
+import { Collection } from './store/useCollections';
+
 type ViewMode = 'grid' | 'list' | 'masonry' | 'headlines';
 
 function App() {
@@ -10,6 +13,8 @@ function App() {
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
   const [viewMode, setViewMode] = useState<ViewMode>('list');
   const [theme, setTheme] = useState<'light' | 'dark'>('dark');
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editCollection, setEditCollection] = useState<Collection | null>(null);
 
   // Handle application theme toggling
   useEffect(() => {
@@ -40,14 +45,27 @@ function App() {
     }
   };
 
+  const handleTabChange = (tab: string) => {
+    if (tab === 'create-collection') {
+      setEditCollection(null);
+      setIsModalOpen(true);
+      return;
+    }
+    setCurrentTab(tab);
+  };
+
   return (
     <div className="app-container">
       {/* Sidebar navigation */}
       <Sidebar 
         currentTab={currentTab} 
-        onTabChange={setCurrentTab} 
+        onTabChange={handleTabChange} 
         isOpen={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
+        onEditCollection={(collection) => {
+          setEditCollection(collection);
+          setIsModalOpen(true);
+        }}
       />
 
       {/* Main Content Pane */}
@@ -251,7 +269,16 @@ function App() {
         )}
 
         {/* Mobile Bottom Navigation */}
-        <BottomNav currentTab={currentTab} onTabChange={setCurrentTab} />
+        <BottomNav currentTab={currentTab} onTabChange={handleTabChange} />
+
+        <CollectionModal 
+          isOpen={isModalOpen} 
+          onClose={() => {
+            setIsModalOpen(false);
+            setEditCollection(null);
+          }} 
+          editCollection={editCollection} 
+        />
       </main>
     </div>
   );
