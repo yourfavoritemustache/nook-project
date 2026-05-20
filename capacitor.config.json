@@ -1,0 +1,6 @@
+{
+  "appId": "com.yourfavoritemustache.nook",
+  "appName": "Nook",
+  "webDir": "dist",
+  "bundledWebRuntime": false
+}
