@@ -8,7 +8,8 @@ import {
   Bookmark,
   ChevronDown,
   ChevronRight,
-  Plus
+  Plus,
+  LogOut
 } from 'lucide-react';
 import { useCollections, buildCollectionTree } from '../store/useCollections';
 import { CollectionTree } from './CollectionTree';
@@ -36,7 +37,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   // Hook up to Zustand store
   const { collections, fetchCollections, subscribeToCollections, unsubscribeFromCollections } = useCollections();
 
-  const { user } = useAuth();
+  const { user, signOut } = useAuth();
 
   useEffect(() => {
     if (!user?.id) return;
@@ -268,17 +269,32 @@ export const Sidebar: React.FC<SidebarProps> = ({
             <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Free Plan</span>
           </div>
         </div>
-        <button 
-          onClick={() => handleTabClick('settings')}
-          style={{
-            background: 'none',
-            border: 'none',
-            cursor: 'pointer',
-            color: 'var(--text-secondary)'
-          }}
-        >
-          <Settings size={18} />
-        </button>
+        <div style={{ display: 'flex', gap: '8px' }}>
+          <button 
+            onClick={() => handleTabClick('settings')}
+            style={{
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              color: 'var(--text-secondary)'
+            }}
+            title="Settings"
+          >
+            <Settings size={18} />
+          </button>
+          <button 
+            onClick={() => signOut()}
+            style={{
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              color: 'var(--danger)'
+            }}
+            title="Log Out"
+          >
+            <LogOut size={18} />
+          </button>
+        </div>
       </div>
     </aside>
   );

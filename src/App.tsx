@@ -262,28 +262,7 @@ function App() {
 
         {/* Floating Action Button (FAB) to Add Bookmark */}
         {['all', 'unsorted', 'collections'].includes(currentTab) && (
-          <button 
-            style={{
-              position: 'fixed',
-              bottom: window.innerWidth <= 768 ? 'calc(var(--bottom-nav-height) + 16px)' : '24px',
-              right: '24px',
-              width: '56px',
-              height: '56px',
-              borderRadius: 'var(--radius-full)',
-              backgroundColor: 'var(--primary)',
-              color: 'white',
-              border: 'none',
-              boxShadow: 'var(--shadow-lg)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              cursor: 'pointer',
-              transition: 'transform var(--transition-fast)',
-              zIndex: 90
-            }}
-            onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
-            onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
-          >
+          <button className="fab">
             <Plus size={24} />
           </button>
         )}

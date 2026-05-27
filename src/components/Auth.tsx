@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { supabase } from '../lib/supabase';
-import { Mail, Lock, AlertCircle, Loader2 } from 'lucide-react';
+import { Mail, Lock, AlertCircle, Loader2, CheckCircle2 } from 'lucide-react';
 
 export const Auth: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -8,11 +8,13 @@ export const Auth: React.FC = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
 
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setError(null);
+    setSuccess(null);
 
     try {
       if (isLogin) {
@@ -22,11 +24,17 @@ export const Auth: React.FC = () => {
         });
         if (error) throw error;
       } else {
-        const { error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
           email,
           password,
         });
         if (error) throw error;
+        
+        if (data?.user && data.user.identities && data.user.identities.length === 0) {
+           setError('Account already exists. Please sign in.');
+        } else {
+           setSuccess('Check your email for the confirmation link.');
+        }
       }
     } catch (err: any) {
       setError(err.message);
@@ -76,6 +84,23 @@ export const Auth: React.FC = () => {
           }}>
             <AlertCircle size={18} style={{ flexShrink: 0, marginTop: '2px' }} />
             <span>{error}</span>
+          </div>
+        )}
+
+        {success && (
+          <div style={{
+            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+            color: 'var(--success)',
+            padding: '12px',
+            borderRadius: 'var(--radius-sm)',
+            marginBottom: '20px',
+            display: 'flex',
+            alignItems: 'flex-start',
+            gap: '8px',
+            fontSize: '14px'
+          }}>
+            <CheckCircle2 size={18} style={{ flexShrink: 0, marginTop: '2px' }} />
+            <span>{success}</span>
           </div>
         )}
 
