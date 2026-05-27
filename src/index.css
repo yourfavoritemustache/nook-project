@@ -159,7 +159,7 @@ a:hover {
 
 /* Mobile Bottom Navigation & Drawer Toggle */
 .bottom-nav {
-  display: none;
+  display: none !important;
   height: var(--bottom-nav-height);
   background-color: var(--bg-surface);
   border-top: 1px solid var(--border-color);
@@ -168,6 +168,28 @@ a:hover {
   left: 0;
   width: 100%;
   z-index: 99;
+}
+
+.fab {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-full);
+  background-color: var(--primary);
+  color: white;
+  border: none;
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform var(--transition-fast);
+  z-index: 90;
+}
+.fab:hover {
+  transform: scale(1.05);
 }
 
 /* Responsiveness overrides for Mobile Layout */
@@ -185,9 +207,13 @@ a:hover {
   }
 
   .bottom-nav {
-    display: flex;
+    display: flex !important;
     justify-content: space-around;
     align-items: center;
+  }
+
+  .fab {
+    bottom: calc(var(--bottom-nav-height) + 16px);
   }
 
   .main-content {

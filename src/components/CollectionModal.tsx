@@ -1,0 +1,284 @@
+import React, { useState, useEffect } from 'react';
+import { X, AlertCircle, Folder, Briefcase, Heart, Star, Book, Code, Camera, Music, Map, Sun, Moon, Zap } from 'lucide-react';
+
+const ICONS = {
+  Folder, Briefcase, Heart, Star, Book, Code, Camera, Music, Map, Sun, Moon, Zap
+};
+const ICON_NAMES = Object.keys(ICONS) as (keyof typeof ICONS)[];
+import { supabase } from '../lib/supabase';
+import { useCollections } from '../store/useCollections';
+import { useAuth } from '../store/useAuth';
+import type { Collection } from '../store/useCollections';
+
+interface CollectionModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  editCollection?: Collection | null;
+  parentId?: number | null;
+}
+
+const COLORS = [
+  '#64748B', '#EF4444', '#F97316', '#F59E0B', 
+  '#10B981', '#0EA5E9', '#3B82F6', '#6366F1', 
+  '#8B5CF6', '#D946EF', '#F43F5E'
+];
+
+export const CollectionModal: React.FC<CollectionModalProps> = ({
+  isOpen,
+  onClose,
+  editCollection,
+  parentId = null
+}) => {
+  const { collections, fetchCollections } = useCollections();
+  const { user } = useAuth();
+  
+  const [title, setTitle] = useState('');
+  const [color, setColor] = useState(COLORS[0]);
+  const [iconName, setIconName] = useState<keyof typeof ICONS>('Folder');
+  const [selectedParentId, setSelectedParentId] = useState<number | null>(parentId);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (isOpen) {
+      if (editCollection) {
+        setTitle(editCollection.title);
+        setColor(editCollection.color || COLORS[0]);
+        setIconName((editCollection.icon as keyof typeof ICONS) || 'Folder');
+        setSelectedParentId(editCollection.parent_id);
+      } else {
+        setTitle('');
+        setColor(COLORS[0]);
+        setIconName('Folder');
+        setSelectedParentId(parentId);
+      }
+      setError(null);
+    }
+  }, [isOpen, editCollection, parentId]);
+
+  if (!isOpen) return null;
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!title.trim()) {
+      setError('Collection name is required');
+      return;
+    }
+
+    if (!user) {
+      setError('You must be logged in to create a collection.');
+      return;
+    }
+
+    setIsLoading(true);
+    setError(null);
+
+    const userId = user.id;
+
+    try {
+      if (editCollection) {
+        const { error } = await supabase
+          .from('collections')
+          .update({
+            title: title.trim(),
+            color,
+            icon: iconName,
+            parent_id: selectedParentId,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', editCollection.id);
+        if (error) throw error;
+      } else {
+        const { error } = await supabase
+          .from('collections')
+          .insert({
+            user_id: userId,
+            title: title.trim(),
+            color,
+            icon: iconName,
+            parent_id: selectedParentId,
+            sort_order: 0
+          });
+        if (error) throw error;
+      }
+
+      await fetchCollections(userId);
+      onClose();
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const availableParents = collections.filter(c => c.id !== editCollection?.id);
+
+  return (
+    <div style={{
+      position: 'fixed',
+      top: 0, left: 0, right: 0, bottom: 0,
+      backgroundColor: 'rgba(0,0,0,0.5)',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      zIndex: 1000,
+      backdropFilter: 'blur(4px)'
+    }}>
+      <div className="card animate-slide-up" style={{
+        width: '100%',
+        maxWidth: '480px',
+        margin: '20px',
+        display: 'flex',
+        flexDirection: 'column'
+      }}>
+        <div style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          padding: '16px 20px',
+          borderBottom: '1px solid var(--border-color)'
+        }}>
+          <h2 style={{ fontSize: '18px', margin: 0 }}>
+            {editCollection ? 'Edit Collection' : 'New Collection'}
+          </h2>
+          <button className="btn-icon" onClick={onClose}>
+            <X size={20} />
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} style={{ padding: '20px' }}>
+          {error && (
+            <div style={{
+              backgroundColor: 'var(--danger)',
+              color: 'white',
+              padding: '10px 12px',
+              borderRadius: 'var(--radius-sm)',
+              marginBottom: '16px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              fontSize: '14px'
+            }}>
+              <AlertCircle size={16} />
+              {error}
+            </div>
+          )}
+
+          <div style={{ marginBottom: '20px' }}>
+            <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px', fontWeight: 500 }}>Name</label>
+            <input 
+              type="text" 
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="e.g. Design Inspiration"
+              autoFocus
+              style={{
+                width: '100%',
+                padding: '10px 14px',
+                borderRadius: 'var(--radius-sm)',
+                border: '1px solid var(--border-color)',
+                backgroundColor: 'var(--bg-app)',
+                fontSize: '15px'
+              }}
+            />
+          </div>
+
+          <div style={{ marginBottom: '20px' }}>
+            <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px', fontWeight: 500 }}>Parent Collection (Optional)</label>
+            <select 
+              value={selectedParentId ?? ''}
+              onChange={(e) => setSelectedParentId(e.target.value ? parseInt(e.target.value, 10) : null)}
+              style={{
+                width: '100%',
+                padding: '10px 14px',
+                borderRadius: 'var(--radius-sm)',
+                border: '1px solid var(--border-color)',
+                backgroundColor: 'var(--bg-app)',
+                fontSize: '15px'
+              }}
+            >
+              <option value="">None (Top Level)</option>
+              {availableParents.map(c => (
+                <option key={c.id} value={c.id}>{c.title}</option>
+              ))}
+            </select>
+          </div>
+
+          <div style={{ marginBottom: '24px' }}>
+            <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px', fontWeight: 500 }}>Icon</label>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+              {ICON_NAMES.map(name => {
+                const IconComponent = ICONS[name];
+                return (
+                  <button
+                    key={name}
+                    type="button"
+                    onClick={() => setIconName(name)}
+                    style={{
+                      width: '40px',
+                      height: '40px',
+                      borderRadius: 'var(--radius-md)',
+                      backgroundColor: iconName === name ? 'rgba(var(--primary-rgb), 0.1)' : 'var(--bg-app)',
+                      border: iconName === name ? '2px solid var(--primary)' : '2px solid transparent',
+                      color: iconName === name ? 'var(--primary)' : 'var(--text-secondary)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s'
+                    }}
+                  >
+                    <IconComponent size={20} />
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          <div style={{ marginBottom: '24px' }}>
+            <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px', fontWeight: 500 }}>Color</label>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+              {COLORS.map(c => (
+                <button
+                  key={c}
+                  type="button"
+                  onClick={() => setColor(c)}
+                  style={{
+                    width: '32px',
+                    height: '32px',
+                    borderRadius: 'var(--radius-full)',
+                    backgroundColor: c,
+                    border: color === c ? '2px solid var(--text-primary)' : '2px solid transparent',
+                    cursor: 'pointer',
+                    boxShadow: color === c ? '0 0 0 2px var(--bg-surface) inset' : 'none',
+                    transition: 'transform 0.1s'
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
+                  onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                />
+              ))}
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
+            <button 
+              type="button" 
+              onClick={onClose} 
+              className="btn"
+              style={{ border: '1px solid var(--border-color)' }}
+            >
+              Cancel
+            </button>
+            <button 
+              type="submit" 
+              className="btn btn-primary"
+              disabled={isLoading}
+            >
+              {isLoading ? 'Saving...' : 'Save'}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+};

@@ -1,7 +1,6 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { 
   Inbox, 
-  Folder, 
   Tag, 
   Highlighter, 
   Settings, 
@@ -9,23 +8,45 @@ import {
   Bookmark,
   ChevronDown,
   ChevronRight,
-  Plus
+  Plus,
+  LogOut
 } from 'lucide-react';
+import { useCollections, buildCollectionTree } from '../store/useCollections';
+import { CollectionTree } from './CollectionTree';
+import { useAuth } from '../store/useAuth';
+
+import type { Collection } from '../store/useCollections';
 
 interface SidebarProps {
   currentTab: string;
   onTabChange: (tab: string) => void;
   isOpen: boolean;
   onClose: () => void;
+  onEditCollection: (collection: Collection) => void;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({ 
   currentTab, 
   onTabChange, 
   isOpen, 
-  onClose 
+  onClose,
+  onEditCollection
 }) => {
   const [collectionsExpanded, setCollectionsExpanded] = React.useState(true);
+
+  // Hook up to Zustand store
+  const { collections, fetchCollections, subscribeToCollections, unsubscribeFromCollections } = useCollections();
+
+  const { user, signOut } = useAuth();
+
+  useEffect(() => {
+    if (!user?.id) return;
+    fetchCollections(user.id);
+    subscribeToCollections(user.id);
+    return () => unsubscribeFromCollections();
+  }, [user?.id, fetchCollections, subscribeToCollections, unsubscribeFromCollections]);
+
+  const tree = buildCollectionTree(collections, null);
 
   const navItems = [
     { id: 'all', label: 'All Bookmarks', icon: Inbox },
@@ -138,40 +159,34 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 {collectionsExpanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
                 Collections
               </button>
-              <button style={{
-                background: 'none',
-                border: 'none',
-                cursor: 'pointer',
-                color: 'var(--text-secondary)'
-              }}>
+              <button 
+                onClick={() => handleTabClick('create-collection')}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  color: 'var(--text-secondary)'
+                }}
+              >
                 <Plus size={14} />
               </button>
             </div>
 
             {collectionsExpanded && (
-              <ul style={{ listStyle: 'none', paddingLeft: '8px', marginTop: '6px' }}>
-                <li>
-                  <button
-                    onClick={() => handleTabClick('collections')}
-                    style={{
-                      width: '100%',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '12px',
-                      padding: '8px 12px',
-                      border: 'none',
-                      borderRadius: 'var(--radius-sm)',
-                      backgroundColor: currentTab === 'collections' ? 'var(--bg-hover)' : 'transparent',
-                      color: currentTab === 'collections' ? 'var(--primary)' : 'var(--text-secondary)',
-                      fontWeight: currentTab === 'collections' ? 600 : 500,
-                      cursor: 'pointer',
-                    }}
-                  >
-                    <Folder size={16} />
-                    <span>My Bookmarks</span>
-                  </button>
-                </li>
-              </ul>
+              <div style={{ marginTop: '6px' }}>
+                {tree.length > 0 ? (
+                  <CollectionTree 
+                    collections={tree} 
+                    currentTab={currentTab} 
+                    onSelect={handleTabClick}
+                    onEdit={onEditCollection}
+                  />
+                ) : (
+                  <div style={{ padding: '8px 12px', fontSize: '13px', color: 'var(--text-muted)' }}>
+                    No collections yet
+                  </div>
+                )}
+              </div>
             )}
           </li>
 
@@ -248,21 +263,38 @@ export const Sidebar: React.FC<SidebarProps> = ({
             U
           </div>
           <div style={{ display: 'flex', flexDirection: 'column' }}>
-            <span style={{ fontSize: '14px', fontWeight: 600, color: 'var(--text-primary)' }}>User Profile</span>
+            <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '140px' }}>
+              {user?.email?.split('@')[0] || 'User Profile'}
+            </span>
             <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Free Plan</span>
           </div>
         </div>
-        <button 
-          onClick={() => handleTabClick('settings')}
-          style={{
-            background: 'none',
-            border: 'none',
-            cursor: 'pointer',
-            color: 'var(--text-secondary)'
-          }}
-        >
-          <Settings size={18} />
-        </button>
+        <div style={{ display: 'flex', gap: '8px' }}>
+          <button 
+            onClick={() => handleTabClick('settings')}
+            style={{
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              color: 'var(--text-secondary)'
+            }}
+            title="Settings"
+          >
+            <Settings size={18} />
+          </button>
+          <button 
+            onClick={() => signOut()}
+            style={{
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              color: 'var(--danger)'
+            }}
+            title="Log Out"
+          >
+            <LogOut size={18} />
+          </button>
+        </div>
       </div>
     </aside>
   );

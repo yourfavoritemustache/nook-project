@@ -1,15 +1,28 @@
 import React, { useState, useEffect } from 'react';
-import { Menu, Grid, List, Plus, Sun, Moon } from 'lucide-react';
+import { Menu, Grid, List, Plus, Sun, Moon, Loader2 } from 'lucide-react';
 import { Sidebar } from './components/Sidebar';
 import { BottomNav } from './components/BottomNav';
+import { Auth } from './components/Auth';
+import { useAuth } from './store/useAuth';
+
+import { CollectionModal } from './components/CollectionModal';
+import type { Collection } from './store/useCollections';
 
 type ViewMode = 'grid' | 'list' | 'masonry' | 'headlines';
 
 function App() {
+  const { session, isLoading, initialize } = useAuth();
+
   const [currentTab, setCurrentTab] = useState<string>('all');
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
   const [viewMode, setViewMode] = useState<ViewMode>('list');
   const [theme, setTheme] = useState<'light' | 'dark'>('dark');
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editCollection, setEditCollection] = useState<Collection | null>(null);
+
+  useEffect(() => {
+    initialize();
+  }, [initialize]);
 
   // Handle application theme toggling
   useEffect(() => {
@@ -40,14 +53,39 @@ function App() {
     }
   };
 
+  const handleTabChange = (tab: string) => {
+    if (tab === 'create-collection') {
+      setEditCollection(null);
+      setIsModalOpen(true);
+      return;
+    }
+    setCurrentTab(tab);
+  };
+
+  if (isLoading) {
+    return (
+      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'var(--bg-app)' }}>
+        <Loader2 className="animate-spin" size={32} color="var(--primary)" />
+      </div>
+    );
+  }
+
+  if (!session) {
+    return <Auth />;
+  }
+
   return (
     <div className="app-container">
       {/* Sidebar navigation */}
       <Sidebar 
         currentTab={currentTab} 
-        onTabChange={setCurrentTab} 
+        onTabChange={handleTabChange} 
         isOpen={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
+        onEditCollection={(collection) => {
+          setEditCollection(collection);
+          setIsModalOpen(true);
+        }}
       />
 
       {/* Main Content Pane */}
@@ -224,34 +262,22 @@ function App() {
 
         {/* Floating Action Button (FAB) to Add Bookmark */}
         {['all', 'unsorted', 'collections'].includes(currentTab) && (
-          <button 
-            style={{
-              position: 'fixed',
-              bottom: window.innerWidth <= 768 ? 'calc(var(--bottom-nav-height) + 16px)' : '24px',
-              right: '24px',
-              width: '56px',
-              height: '56px',
-              borderRadius: 'var(--radius-full)',
-              backgroundColor: 'var(--primary)',
-              color: 'white',
-              border: 'none',
-              boxShadow: 'var(--shadow-lg)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              cursor: 'pointer',
-              transition: 'transform var(--transition-fast)',
-              zIndex: 90
-            }}
-            onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
-            onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
-          >
+          <button className="fab">
             <Plus size={24} />
           </button>
         )}
 
         {/* Mobile Bottom Navigation */}
-        <BottomNav currentTab={currentTab} onTabChange={setCurrentTab} />
+        <BottomNav currentTab={currentTab} onTabChange={handleTabChange} />
+
+        <CollectionModal 
+          isOpen={isModalOpen} 
+          onClose={() => {
+            setIsModalOpen(false);
+            setEditCollection(null);
+          }} 
+          editCollection={editCollection} 
+        />
       </main>
     </div>
   );
