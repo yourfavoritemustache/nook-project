@@ -6,6 +6,7 @@ import { Auth } from './components/Auth';
 import { useAuth } from './store/useAuth';
 
 import { CollectionModal } from './components/CollectionModal';
+import { AddBookmarkModal } from './components/AddBookmarkModal';
 import type { Collection } from './store/useCollections';
 
 type ViewMode = 'grid' | 'list' | 'masonry' | 'headlines';
@@ -19,6 +20,10 @@ function App() {
   const [theme, setTheme] = useState<'light' | 'dark'>('dark');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editCollection, setEditCollection] = useState<Collection | null>(null);
+  const [isAddBookmarkOpen, setIsAddBookmarkOpen] = useState(false);
+
+  // Parse collection ID from currentTab if it's numeric
+  const activeCollectionId = !isNaN(Number(currentTab)) && currentTab.trim() !== '' ? Number(currentTab) : null;
 
   useEffect(() => {
     initialize();
@@ -261,11 +266,11 @@ function App() {
         </div>
 
         {/* Floating Action Button (FAB) to Add Bookmark */}
-        {['all', 'unsorted', 'collections'].includes(currentTab) && (
-          <button className="fab">
+        {['all', 'unsorted', 'collections'].includes(currentTab) || activeCollectionId !== null ? (
+          <button className="fab" onClick={() => setIsAddBookmarkOpen(true)}>
             <Plus size={24} />
           </button>
-        )}
+        ) : null}
 
         {/* Mobile Bottom Navigation */}
         <BottomNav currentTab={currentTab} onTabChange={handleTabChange} />
@@ -277,6 +282,12 @@ function App() {
             setEditCollection(null);
           }} 
           editCollection={editCollection} 
+        />
+
+        <AddBookmarkModal 
+          isOpen={isAddBookmarkOpen}
+          onClose={() => setIsAddBookmarkOpen(false)}
+          currentCollectionId={activeCollectionId}
         />
       </main>
     </div>
