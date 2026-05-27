@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { useCollections, buildCollectionTree } from '../store/useCollections';
 import { CollectionTree } from './CollectionTree';
+import { useAuth } from '../store/useAuth';
 
 import type { Collection } from '../store/useCollections';
 
@@ -35,14 +36,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
   // Hook up to Zustand store
   const { collections, fetchCollections, subscribeToCollections, unsubscribeFromCollections } = useCollections();
 
-  // Placeholder user ID until auth is fully implemented in the shell
-  const userId = '00000000-0000-0000-0000-000000000000';
+  const { user } = useAuth();
 
   useEffect(() => {
-    fetchCollections(userId);
-    subscribeToCollections(userId);
+    if (!user?.id) return;
+    fetchCollections(user.id);
+    subscribeToCollections(user.id);
     return () => unsubscribeFromCollections();
-  }, []);
+  }, [user?.id, fetchCollections, subscribeToCollections, unsubscribeFromCollections]);
 
   const tree = buildCollectionTree(collections, null);
 
@@ -261,7 +262,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
             U
           </div>
           <div style={{ display: 'flex', flexDirection: 'column' }}>
-            <span style={{ fontSize: '14px', fontWeight: 600, color: 'var(--text-primary)' }}>User Profile</span>
+            <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '140px' }}>
+              {user?.email?.split('@')[0] || 'User Profile'}
+            </span>
             <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Free Plan</span>
           </div>
         </div>

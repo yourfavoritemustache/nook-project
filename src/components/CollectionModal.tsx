@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { X, AlertCircle } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useCollections } from '../store/useCollections';
+import { useAuth } from '../store/useAuth';
 import type { Collection } from '../store/useCollections';
 
 interface CollectionModalProps {
@@ -24,6 +25,7 @@ export const CollectionModal: React.FC<CollectionModalProps> = ({
   parentId = null
 }) => {
   const { collections, fetchCollections } = useCollections();
+  const { user } = useAuth();
   
   const [title, setTitle] = useState('');
   const [color, setColor] = useState(COLORS[0]);
@@ -55,11 +57,15 @@ export const CollectionModal: React.FC<CollectionModalProps> = ({
       return;
     }
 
+    if (!user) {
+      setError('You must be logged in to create a collection.');
+      return;
+    }
+
     setIsLoading(true);
     setError(null);
 
-    // Placeholder user ID
-    const userId = '00000000-0000-0000-0000-000000000000';
+    const userId = user.id;
 
     try {
       if (editCollection) {

@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Menu, Grid, List, Plus, Sun, Moon } from 'lucide-react';
+import { Menu, Grid, List, Plus, Sun, Moon, Loader2 } from 'lucide-react';
 import { Sidebar } from './components/Sidebar';
 import { BottomNav } from './components/BottomNav';
+import { Auth } from './components/Auth';
+import { useAuth } from './store/useAuth';
 
 import { CollectionModal } from './components/CollectionModal';
 import type { Collection } from './store/useCollections';
@@ -9,12 +11,18 @@ import type { Collection } from './store/useCollections';
 type ViewMode = 'grid' | 'list' | 'masonry' | 'headlines';
 
 function App() {
+  const { session, isLoading, initialize } = useAuth();
+
   const [currentTab, setCurrentTab] = useState<string>('all');
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
   const [viewMode, setViewMode] = useState<ViewMode>('list');
   const [theme, setTheme] = useState<'light' | 'dark'>('dark');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editCollection, setEditCollection] = useState<Collection | null>(null);
+
+  useEffect(() => {
+    initialize();
+  }, [initialize]);
 
   // Handle application theme toggling
   useEffect(() => {
@@ -53,6 +61,18 @@ function App() {
     }
     setCurrentTab(tab);
   };
+
+  if (isLoading) {
+    return (
+      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'var(--bg-app)' }}>
+        <Loader2 className="animate-spin" size={32} color="var(--primary)" />
+      </div>
+    );
+  }
+
+  if (!session) {
+    return <Auth />;
+  }
 
   return (
     <div className="app-container">
