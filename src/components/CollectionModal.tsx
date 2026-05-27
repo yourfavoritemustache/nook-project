@@ -1,5 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { X, AlertCircle } from 'lucide-react';
+import { X, AlertCircle, Folder, Briefcase, Heart, Star, Book, Code, Camera, Music, Map, Sun, Moon, Zap } from 'lucide-react';
+
+const ICONS = {
+  Folder, Briefcase, Heart, Star, Book, Code, Camera, Music, Map, Sun, Moon, Zap
+};
+const ICON_NAMES = Object.keys(ICONS) as (keyof typeof ICONS)[];
 import { supabase } from '../lib/supabase';
 import { useCollections } from '../store/useCollections';
 import { useAuth } from '../store/useAuth';
@@ -29,6 +34,7 @@ export const CollectionModal: React.FC<CollectionModalProps> = ({
   
   const [title, setTitle] = useState('');
   const [color, setColor] = useState(COLORS[0]);
+  const [iconName, setIconName] = useState<keyof typeof ICONS>('Folder');
   const [selectedParentId, setSelectedParentId] = useState<number | null>(parentId);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -38,10 +44,12 @@ export const CollectionModal: React.FC<CollectionModalProps> = ({
       if (editCollection) {
         setTitle(editCollection.title);
         setColor(editCollection.color || COLORS[0]);
+        setIconName((editCollection.icon as keyof typeof ICONS) || 'Folder');
         setSelectedParentId(editCollection.parent_id);
       } else {
         setTitle('');
         setColor(COLORS[0]);
+        setIconName('Folder');
         setSelectedParentId(parentId);
       }
       setError(null);
@@ -74,6 +82,7 @@ export const CollectionModal: React.FC<CollectionModalProps> = ({
           .update({
             title: title.trim(),
             color,
+            icon: iconName,
             parent_id: selectedParentId,
             updated_at: new Date().toISOString()
           })
@@ -86,6 +95,7 @@ export const CollectionModal: React.FC<CollectionModalProps> = ({
             user_id: userId,
             title: title.trim(),
             color,
+            icon: iconName,
             parent_id: selectedParentId,
             sort_order: 0
           });
@@ -192,6 +202,37 @@ export const CollectionModal: React.FC<CollectionModalProps> = ({
                 <option key={c.id} value={c.id}>{c.title}</option>
               ))}
             </select>
+          </div>
+
+          <div style={{ marginBottom: '24px' }}>
+            <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px', fontWeight: 500 }}>Icon</label>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+              {ICON_NAMES.map(name => {
+                const IconComponent = ICONS[name];
+                return (
+                  <button
+                    key={name}
+                    type="button"
+                    onClick={() => setIconName(name)}
+                    style={{
+                      width: '40px',
+                      height: '40px',
+                      borderRadius: 'var(--radius-md)',
+                      backgroundColor: iconName === name ? 'rgba(var(--primary-rgb), 0.1)' : 'var(--bg-app)',
+                      border: iconName === name ? '2px solid var(--primary)' : '2px solid transparent',
+                      color: iconName === name ? 'var(--primary)' : 'var(--text-secondary)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s'
+                    }}
+                  >
+                    <IconComponent size={20} />
+                  </button>
+                );
+              })}
+            </div>
           </div>
 
           <div style={{ marginBottom: '24px' }}>

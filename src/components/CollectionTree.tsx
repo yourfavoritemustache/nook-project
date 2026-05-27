@@ -1,5 +1,12 @@
 import React, { useState } from 'react';
-import { Folder, ChevronRight, ChevronDown, MoreHorizontal } from 'lucide-react';
+import { 
+  ChevronRight, ChevronDown, MoreHorizontal,
+  Folder, Briefcase, Heart, Star, Book, Code, Camera, Music, Map, Sun, Moon, Zap
+} from 'lucide-react';
+
+const ICONS = {
+  Folder, Briefcase, Heart, Star, Book, Code, Camera, Music, Map, Sun, Moon, Zap
+};
 import type { Collection } from '../store/useCollections';
 
 interface CollectionTreeProps {
@@ -65,7 +72,10 @@ export const CollectionTree: React.FC<CollectionTreeProps> = ({
 
               {/* Icon */}
               <div style={{ margin: '0 8px', color: node.color || 'inherit' }}>
-                <Folder size={16} fill={isActive ? 'currentColor' : 'none'} />
+                {(() => {
+                  const IconComponent = ICONS[(node.icon as keyof typeof ICONS) || 'Folder'] || Folder;
+                  return <IconComponent size={16} fill={isActive ? 'currentColor' : 'none'} />;
+                })()}
               </div>
 
               {/* Title */}
